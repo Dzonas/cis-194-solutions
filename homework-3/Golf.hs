@@ -1,4 +1,4 @@
-module Ex1 where
+module Golf where
 
 skips :: [a] -> [[a]]
 skips xs = map takeModN [1 .. (length xs)]
