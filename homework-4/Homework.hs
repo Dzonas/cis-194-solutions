@@ -10,16 +10,19 @@ fun2' n = sum . filter even . takeWhile (/= 1) $ iterate
 
 data Tree a = Leaf | Node Integer (Tree a) a (Tree a) deriving (Show, Eq)
 
-treeHeight :: Tree a -> Integer
-treeHeight Leaf           = 0
-treeHeight (Node n _ _ _) = n
+height :: Tree a -> Integer
+height Leaf           = 0
+height (Node h _ _ _) = h
+
+insert :: a -> Tree a -> Tree a
+insert n Leaf = Node 0 Leaf n Leaf
+insert n (Node h left x right)
+  | leftH <= rightH = Node newH (insert n left) x right
+  | otherwise       = Node newH left x (insert n right)
+ where
+  newH   = max leftH rightH + 1
+  leftH  = height left
+  rightH = height right
 
 foldTree :: [a] -> Tree a
-foldTree []       = Leaf
-foldTree [x     ] = Node 0 Leaf x Leaf
-foldTree (x : xs) = Node height left x right
- where
-  height = max (treeHeight left) (treeHeight right) + 1
-  left   = foldTree $ take n xs
-  right  = foldTree $ drop n xs
-  n      = length xs `div` 2
+foldTree = foldr insert Leaf
