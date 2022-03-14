@@ -26,3 +26,9 @@ insert n (Node h left x right)
 
 foldTree :: [a] -> Tree a
 foldTree = foldr insert Leaf
+
+xor :: [Bool] -> Bool
+xor = foldr (\x acc -> (x || acc) && not (x && acc)) False
+
+map' :: (a -> b) -> [a] -> [b]
+map' f = foldr (\x acc -> f x : acc) []
