@@ -32,3 +32,16 @@ xor = foldr (\x acc -> (x || acc) && not (x && acc)) False
 
 map' :: (a -> b) -> [a] -> [b]
 map' f = foldr (\x acc -> f x : acc) []
+
+cartProd :: [a] -> [b] -> [(a, b)]
+cartProd xs ys = [ (x, y) | x <- xs, y <- ys ]
+
+sieveSundaram :: Integer -> [Integer]
+sieveSundaram n = [1, 2] ++ primes
+ where
+  primes = map (\x -> 2 * x + 1) . filter (`notElem` crossedOut) $ [1 .. n]
+  crossedOut =
+    filter (<= n)
+      . map (\(i, j) -> i + j + 2 * i * j)
+      . filter (\(i, j) -> j >= i)
+      $ cartProd [1 .. n] [1 .. n]
