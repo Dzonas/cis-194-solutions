@@ -12,3 +12,13 @@ evalStr :: String -> Maybe Integer
 evalStr s = do
   x <- parseExp Lit Add Mul s
   return (eval x)
+
+class Expr a where
+  lit :: Integer -> a
+  add :: a -> a -> a
+  mul :: a -> a -> a
+
+instance Expr ExprT where
+  lit = Lit
+  add = Add
+  mul = Mul
