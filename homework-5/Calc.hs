@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 module Calc where
 
+import qualified Data.Map                      as M
 import           ExprT
 import           Parser
 import qualified StackVM                       as S
@@ -57,3 +58,40 @@ instance Expr S.Program where
 compile :: String -> Maybe S.Program
 compile = do
   parseExp lit add mul
+
+class HasVars a where
+  var :: String -> a
+
+data VarExprT = VLit Integer
+                | VAdd VarExprT VarExprT
+                | VMul VarExprT VarExprT
+                | VVar String
+                deriving (Show, Eq)
+
+instance Expr VarExprT where
+  lit = VLit
+  add = VAdd
+  mul = VMul
+
+instance HasVars VarExprT where
+  var = VVar
+
+instance HasVars (M.Map String Integer -> Maybe Integer) where
+  var s = M.lookup s
+
+instance Expr (M.Map String Integer -> Maybe Integer) where
+  lit n = \_ -> Just n
+  add x y = \m -> do
+    a <- x m
+    b <- y m
+    return (a + b)
+  mul x y = \m -> do
+    a <- x m
+    b <- y m
+    return (a * b)
+
+withVars
+  :: [(String, Integer)]
+  -> (M.Map String Integer -> Maybe Integer)
+  -> Maybe Integer
+withVars vs exp = exp $ M.fromList vs
